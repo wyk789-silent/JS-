@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+
+  <script>
+    function person(a, b, c) {
+      console.log(this.name);
+      console.log(a, b, c);
+    }
+
+    const egg = {
+      name: "蛋老师",
+    };
+
+    Function.prototype.newApply = function (obj, arr) {
+      obj = obj || window;
+      obj.p = this;
+      let result;
+      const newArguments = [];
+
+      if (!arr) {
+        result = obj.p();
+      } else {
+        for (let i = 0; i < arr.length; i++) {
+          newArguments.push("arr[" + i + "]");
+        }
+        result = eval("obj.p(" + newArguments + ")");
+        delete obj.p;
+      }
+
+      return result;
+    };
+    person.newApply(egg, ["点赞", "转发", "收藏"]);
+  </script>
+</html>

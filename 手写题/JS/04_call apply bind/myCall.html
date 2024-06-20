@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mycall</title>
+  </head>
+  <body></body>
+
+  <script>
+    function person(a, b, c) {
+      return {
+        name: this.name,
+        a: a,
+        b: b,
+        c: c,
+      };
+    }
+
+    const egg = {
+      name: "蛋老师",
+    };
+
+    // this指向对象egg
+    // person.call(egg)
+
+    Function.prototype.myCall = function (obj) {
+      // 为了防止指向对象异常，默认指向window
+      var obj = obj || window;
+      // 这个this指向目标person方法
+      //   console.log(this);
+      obj.p = this;
+
+      //   通过argument来获取其他参数
+      let newArguments = [];
+      for (let i = 1; i < arguments.length; i++) {
+        newArguments.push("arguments[" + i + "]");
+      }
+      const result = eval("obj.p(" + newArguments + ")");
+      delete obj.p;
+      return result;
+    };
+
+    const res = person.myCall(egg, "点赞", "转发", "收藏");
+    console.log(res); 
+  </script>
+</html>

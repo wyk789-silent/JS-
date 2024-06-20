@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Object.Create</title>
+
+    <style>
+    </style>
+  </head>
+  <body>
+    Object.Create的作用类似于关键字new，即实例化一个新对象
+
+    <!-- const person = {
+        isHuman: false,
+        printIntroduction: function () {
+          console.log(`My name is ${this.name}. Am I human? ${this.isHuman}`);
+        },
+      };
+      
+      const me = Object.create(person);
+      
+      me.name = 'Matthew'; // "name" is a property set on "me", but not on "person"
+      me.isHuman = true; // Inherited properties can be overwritten
+      
+      me.printIntroduction();
+      // Expected output: "My name is Matthew. Am I human? true" -->
+  </body>
+
+  <script>
+    function myCreate(obj) {
+      //接受一个要实例化的对象
+      function F() {}
+      F.prototype = obj;
+      return new F();
+    }
+
+    // 创建一个静态类
+    const Person = {
+      isHuman: false,
+      introduce() {
+        console.log(
+          `My name is ${this.name}. Am I human? ${this.isHuman ? "Yes!" : "No"}`
+        );
+      },
+    };
+
+    const p1 = myCreate(Person);
+    p1.isHuman = true;
+    p1.name = "小王";
+    p1.introduce();
+  </script>
+</html>

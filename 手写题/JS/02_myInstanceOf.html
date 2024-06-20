@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>手写 instanceOf</title>
+  </head>
+  <body>
+    <p2>手写 instanceOf</p2>
+  </body>
+
+  <script>
+    // 原型对象的终点为 null
+    function myInstanceof(left, right) {
+      let proto = Object.getPrototypeOf(left); //获取左侧的_proto_
+      let prototype = right.prototype; //获取目标的 prototype
+
+      //   console.log(proto);
+      while (true) {
+        if (!proto) return false;
+        if (proto === prototype) return true;
+        // 根据原型链，左侧隐式原型和右侧原型对象指向相同 则成立
+        // 否则继续向上查找
+        proto = Object.getPrototypeOf(proto);
+      }
+    }
+
+    class Person {
+      constructor(name) {
+        this.name = name;
+      }
+    }
+
+    class Student extends Person {
+      // 继承Person类使其具有name属性
+      constructor(name, score) {
+        super(name);
+        this.score = score;
+      }
+
+      introduce() {
+        console.log(`我叫${this.name},考了${this.score}分`);
+      }
+    }
+
+    let stu = new Student("小王", 99);
+    console.log(myInstanceof(stu, Object));
+  </script>
+</html>

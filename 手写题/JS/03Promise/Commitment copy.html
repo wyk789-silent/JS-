@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+
+  <script>
+    class Commitment {
+      static PENDING = "待定";
+      static FULFILLED = "完成";
+      static REJECTED = "失败";
+
+      constructor(func) {
+        this.status = Commitment.PENDING;
+        this.value = null;
+        this.resolveCallBacks = [];
+        this.rejectCallBacks = [];
+        func(this.resolve.bind(this), this.reject.bind(this));
+      }
+
+      resolve(value) {
+        setTimeout(() => {
+          if (this.status === Commitment.PENDING) {
+            this.status = Commitment.FULFILLED;
+            this.value = value;
+            this.resolveCallBacks.forEach((callback) => {
+              callback(value);
+            });
+          }
+        });
+      }
+
+      reject(value) {
+        setTimeout(() => {
+          if (this.status === Commitment.PENDING) {
+            this.status = Commitment.REJECTED;
+            this.value = value;
+            this.rejectCallBacks.forEach((callback) => {
+              callback(value);
+            });
+          }
+        });
+      }
+
+      then(onFUlFILLED, onREJECTED) {
+        return new Commitment((resolve, reject) => {
+          onFUlFILLED =
+            typeof onFUlFILLED === "function" ? onFUlFILLED : () => {};
+          onREJECTED = typeof onREJECTED === "function" ? onREJECTED : () => {};
+
+          if (this.status === Commitment.PENDING) {
+            this.resolveCallBacks.push(onFUlFILLED);
+            this.rejectCallBacks.push(onREJECTED);
+          }
+
+          if (this.status === Commitment.FULFILLED) {
+            setTimeout(() => {
+              onFUlFILLED(this.value);
+            });
+          }
+          if (this.status === Commitment.REJECTED) {
+            setTimeout(() => {
+              onREJECTED(this.value);
+            });
+          }
+        });
+      }
+    }
+
+    console.log("第一步");
+    let commitment = new Commitment((resolve, reject) => {
+      console.log("第二步");
+      setTimeout(() => {
+        reject("下次一定");
+        // resolve("这次一定");
+        console.log("第四步");
+      });
+    });
+    commitment
+      .then(
+        (result) => {
+          console.log(result);
+        },
+        (error) => {
+          console.log(error);
+        }
+      )
+      .then(
+        (result) => console.log(result),
+        (error) => console.log(error.message)
+      );
+    console.log("第三步");
+  </script>
+</html>
