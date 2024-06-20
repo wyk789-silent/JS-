@@ -8,62 +8,78 @@
   <body></body>
 
   <script>
+    // const p1 = new Promise((resolve, reject) => {
+    //   resolve("满足了");
+    //   reject("失败了");
+    // });
+    // p1.then(
+    //   (result) => {
+    //     console.log(result);
+    //   },
+    //   (error) => {
+    //     console.log(error);
+    //   }
+    // );
+
     class Commitment {
       static PENDING = "待定";
-      static FULFILLED = "完成";
+      static FULFILLED = "成功";
       static REJECTED = "失败";
 
       constructor(func) {
         this.status = Commitment.PENDING;
-        this.value = null;
+        this.result = null;
         this.resolveCallBacks = [];
         this.rejectCallBacks = [];
-        func(this.resolve.bind(this), this.reject.bind(this));
+
+        try {
+          // 判断异常状态
+          func(this.resolve.bind(this), this.reject.bind(this));
+        } catch (error) {
+          this.reject(error);
+        }
       }
 
-      resolve(value) {
+      resolve(result) {
         setTimeout(() => {
           if (this.status === Commitment.PENDING) {
             this.status = Commitment.FULFILLED;
-            this.value = value;
+            this.result = result;
             this.resolveCallBacks.forEach((callback) => {
-              callback(value);
+              callback(result);
             });
           }
         });
       }
-
-      reject(value) {
+      reject(result) {
         setTimeout(() => {
           if (this.status === Commitment.PENDING) {
             this.status = Commitment.REJECTED;
-            this.value = value;
+            this.result = result;
             this.rejectCallBacks.forEach((callback) => {
-              callback(value);
+              callback(result);
             });
           }
         });
       }
 
-      then(onFUlFILLED, onREJECTED) {
+      then(onFUIFLLED, onREJECTED) {
         return new Commitment((resolve, reject) => {
-          onFUlFILLED =
-            typeof onFUlFILLED === "function" ? onFUlFILLED : () => {};
+          onFUIFLLED = typeof onFUIFLLED === "function" ? onFUIFLLED : () => {};
           onREJECTED = typeof onREJECTED === "function" ? onREJECTED : () => {};
-
           if (this.status === Commitment.PENDING) {
-            this.resolveCallBacks.push(onFUlFILLED);
+            this.resolveCallBacks.push(onFUIFLLED);
             this.rejectCallBacks.push(onREJECTED);
           }
 
           if (this.status === Commitment.FULFILLED) {
             setTimeout(() => {
-              onFUlFILLED(this.value);
+              onFUIFLLED(this.result);
             });
           }
           if (this.status === Commitment.REJECTED) {
             setTimeout(() => {
-              onREJECTED(this.value);
+              onREJECTED(this.result);
             });
           }
         });
@@ -71,7 +87,7 @@
     }
 
     console.log("第一步");
-    let commitment = new Commitment((resolve, reject) => {
+    const commitment = new Commitment((resolve, reject) => {
       console.log("第二步");
       setTimeout(() => {
         reject("下次一定");
@@ -79,19 +95,10 @@
         console.log("第四步");
       });
     });
-    commitment
-      .then(
-        (result) => {
-          console.log(result);
-        },
-        (error) => {
-          console.log(error);
-        }
-      )
-      .then(
-        (result) => console.log(result),
-        (error) => console.log(error.message)
-      );
+    commitment.then(
+      (result) => console.log(result),
+      (error) => console.log(error)
+    );
     console.log("第三步");
   </script>
 </html>
